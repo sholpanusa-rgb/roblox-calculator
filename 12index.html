@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Roblox GameDev Balance Calculator</title>
+    <style>
+        :root {
+            --rbx-bg: #111216;
+            --rbx-card: #191b20;
+            --rbx-card-inner: #23252c;
+            --rbx-red: #e11d48;
+            --rbx-red-hover: #f43f5e;
+            --rbx-blue: #0284c7;
+            --rbx-blue-hover: #38bdf8;
+            --rbx-green: #10b981;
+            --rbx-yellow: #f59e0b;
+            --rbx-purple: #8b5cf6;
+            --rbx-text: #ffffff;
+            --rbx-subtext: #94a3b8;
+            --rbx-shadow: 0 8px 0px #090a0f;
+            --rbx-btn-shadow: 0 5px 0px #090a0f;
+        }
+
+        * {
+            box-sizing: border-box;
+            user-select: none;
+        }
+
+        body {
+            font-family: 'Trebuchet MS', 'Segoe UI', Arial, sans-serif;
+            background-color: var(--rbx-bg);
+            background-image: 
+                radial-gradient(circle at 15% 15%, rgba(225, 29, 72, 0.15) 0%, transparent 35%),
+                radial-gradient(circle at 85% 85%, rgba(2, 132, 199, 0.15) 0%, transparent 35%);
+            color: var(--rbx-text);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            max-width: 950px;
+            width: 100%;
+        }
+
+        header {
+            background: linear-gradient(135deg, #e11d48 0%, #0284c7 100%);
+            border-radius: 20px;
+            padding: 25px 20px;
+            text-align: center;
+            margin-bottom: 30px;
+            box-shadow: var(--rbx-shadow);
+            border: 4px solid #ffffff;
+            position: relative;
+            overflow: hidden;
+        }
+
+        h1 {
+            font-size: 2.2rem;
+            font-weight: 900;
+            margin: 0;
+            color: #ffffff;
+            text-shadow: 3px 3px 0px #000000;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .subtitle {
+            font-size: 1.05rem;
+            font-weight: 800;
+            color: #f1f5f9;
+            margin-top: 8px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+        }
+
+        @media (max-width: 820px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .card {
+            background-color: var(--rbx-card);
+            border: 3px solid #2e3440;
+            border-radius: 18px;
+            padding: 22px;
+            box-shadow: var(--rbx-shadow);
+            position: relative;
+        }
+
+        .full-width {
+            grid-column: 1 / -1;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 18px;
+            border-bottom: 3px dashed #2e3440;
+            padding-bottom: 10px;
+        }
+
+        .card-icon {
+            font-size: 1.8rem;
+        }
+
+        h2 {
+            font-size: 1.3rem;
+            font-weight: 900;
+            margin: 0;
+            color: #ffffff;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 6px;
+            font-size: 0.95rem;
+            font-weight: 800;
+            color: var(--rbx-subtext);
+            text-transform: uppercase;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px 15px;
+            background-color: var(--rbx-card-inner);
+            border: 3px solid #3b4252;
+            border-radius: 12px;
+            color: #ffffff;
+            font-weight: 900;
+            font-size: 1.2rem;
+            transition: all 0.2s;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--rbx-blue);
+            box-shadow: 0 0 10px rgba(2, 132, 199, 0.5);
+        }
+
+        .rbx-btn {
+            width: 100%;
+            padding: 14px;
+            background-color: var(--rbx-green);
+            color: #ffffff;
+            border: 3px solid #065f46;
+            border-radius: 14px;
+            font-size: 1.2rem;
+            font-weight: 900;
+            cursor: pointer;
+            box-shadow: var(--rbx-btn-shadow);
+            transition: all 0.1s;
+            text-shadow: 1px 1px 0px #000000;
+            text-transform: uppercase;
+            margin-top: 10px;
+        }
+
+        .rbx-btn:hover {
+            background-color: #34d399;
+            transform: translateY(-2px);
+        }
+
+        .rbx-btn:active {
+            transform: translateY(4px);
+            box-shadow: none;
+        }
+
+        .result-box {
+            background-color: var(--rbx-card-inner);
+            border: 2px solid #3b4252;
+            border-radius: 12px;
+            padding: 12px 16px;
+            margin-top: 12px;
+            position: relative;
+        }
+
+        .result-title {
+            font-size: 0.85rem;
+            font-weight: 800;
+            color: var(--rbx-subtext);
+            text-transform: uppercase;
+        }
+
+        .result-value {
+            font-size: 1.6rem;
+            font-weight: 900;
+            color: var(--rbx-green);
+            margin-top: 2px;
+            text-shadow: 1px 1px 0px #000;
+        }
+
+        .formula-info {
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: #64748b;
+            margin-top: 4px;
+        }
+
+        .unary-output {
+            word-break: break-all;
+            font-weight: 900;
+            color: var(--rbx-yellow);
+            max-height: 70px;
+            overflow-y: auto;
+            font-size: 1.1rem;
+            margin-top: 4px;
+        }
+
+        .roblox-accent-red { color: var(--rbx-red); }
+        .roblox-accent-blue { color: var(--rbx-blue); }
+        .roblox-accent-yellow { color: var(--rbx-yellow); }
+        .roblox-accent-purple { color: var(--rbx-purple); }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>🟥 Roblox GameDev Balance Calculator ⬛</h1>
+        <div class="subtitle">Интерактивный калькулятор теории вероятностей, процентов и баланса для разработчиков</div>
+    </header>
+
+    <div class="grid">
+        <!-- Блок 1: Расчет шансов выпадения -->
+        <div class="card">
+            <div class="card-header">
+                <span class="card-icon">🎁</span>
+                <h2>1. Шансы Loot Box / Flip</h2>
+            </div>
+            
+            <div class="input-group">
+                <label for="chanceInput">Шанс успеха за 1 открывание (%):</label>
+                <input type="number" id="chanceInput" value="5" min="0.01" max="100" step="0.1" oninput="calculateProbability()">
+            </div>
+            <div class="input-group">
+                <label for="attemptsInput">Количество открытий / бросков (n):</label>
+                <input type="number" id="attemptsInput" value="20" min="1" max="1000" oninput="calculateProbability()">
+            </div>
+
+            <div class="result-box">
+                <div class="result-title">Шанс получить хотя бы 1 предмет:</div>
+                <div class="result-value" id="probResult">64.16%</div>
+                <div class="formula-info">Формула: P = 1 - (1 - p)ⁿ</div>
+            </div>
+
+            <div class="result-box" style="border-color: var(--rbx-red);">
+                <div class="result-title">Шанс остаться ни с чем (Серия неудач):</div>
+                <div class="result-value roblox-accent-red" id="failResult">35.84%</div>
+            </div>
+        </div>
+
+        <!-- Блок 2: Pity-система (Гарант) -->
+        <div class="card">
+            <div class="card-header">
+                <span class="card-icon">🛡️</span>
+                <h2>2. Pity-Система (Гарант)</h2>
+            </div>
+            
+            <p style="font-size: 0.85rem; color: var(--rbx-subtext); margin-top:0;">
+                Защита от «ошибки игрока»: вычисляет порог попыток для достижения 95% гарантии успеха.
+            </p>
+
+            <div class="result-box" style="border-color: var(--rbx-yellow); margin-top: 25px;">
+                <div class="result-title">Рекомендуемый порог Гаранта:</div>
+                <div class="result-value roblox-accent-yellow" id="pityResult">59 попыток</div>
+                <div class="formula-info">Формула: n_pity = ln(1 - 0.95) / ln(1 - p)</div>
+            </div>
+
+            <div class="result-box" style="border-color: var(--rbx-purple);">
+                <div class="result-title">Статус честности баланса:</div>
+                <div class="result-value roblox-accent-purple" id="pityStatus" style="font-size:1.2rem;">Нужен Гарант!</div>
+            </div>
+        </div>
+
+        <!-- Блок 3: Конвертер Десятичных Дробей и Процентов -->
+        <div class="card full-width">
+            <div class="card-header">
+                <span class="card-icon">🔄</span>
+                <h2>3. Модуль: Проценты ⇆ Десятичные Дроби (7 класс)</h2>
+            </div>
+            <p style="font-size: 0.85rem; color: var(--rbx-subtext); margin-top: 0;">
+                Перевод процентного шанса в математическую десятичную дробь и наоборот для использования в скриптах Lua (Roblox Studio).
+            </p>
+            <div class="grid">
+                <div class="input-group">
+                    <label for="percentVal">Введи Проценты (%):</label>
+                    <input type="number" id="percentVal" value="5" step="0.01" oninput="convertPercentToDecimal()">
+                    <div class="result-box">
+                        <div class="result-title">Десятичная дробь (для кода):</div>
+                        <div class="result-value roblox-accent-blue" id="decFractionResult">0.05</div>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label for="decimalVal">Введи Десятичную дробь (0 - 1):</label>
+                    <input type="number" id="decimalVal" value="0.05" step="0.001" min="0" max="1" oninput="convertDecimalToPercent()">
+                    <div class="result-box">
+                        <div class="result-title">Процентный шанс (%):</div>
+                        <div class="result-value" id="percentResult">5%</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Блок 4: Системы Счисления -->
+        <div class="card full-width">
+            <div class="card-header">
+                <span class="card-icon">🔢</span>
+                <h2>4. Системы счисления (Информатика)</h2>
+            </div>
+            <div class="grid">
+                <div class="input-group">
+                    <label for="decInput">Десятичное число (попытки):</label>
+                    <input type="number" id="decInput" value="12" min="1" max="200" oninput="convertBases()">
+                </div>
+                <div>
+                    <div class="result-box">
+                        <div class="result-title">Двоичный код (Binary):</div>
+                        <div class="result-value roblox-accent-blue" id="binResult">1100₂</div>
+                    </div>
+                    <div class="result-box">
+                        <div class="result-title">Унарная («палочковая») система:</div>
+                        <div class="unary-output" id="unaryResult">||||||||||||</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Блок 5: Симулятор Монте-Карло -->
+        <div class="card full-width">
+            <div class="card-header">
+                <span class="card-icon">🎲</span>
+                <h2>5. Симулятор Монте-Карло (1 000 виртуальных тестов)</h2>
+            </div>
+            <p style="font-size: 0.85rem; color: var(--rbx-subtext); margin-top:0;">
+                Моделирует 1 000 открытий виртуальных сундуков за 1 миллисекунду, демонстрируя Закон больших чисел.
+            </p>
+            <button class="rbx-btn" onclick="runMonteCarlo()">🚀 Запустить 1 000 симуляций</button>
+
+            <div class="grid" style="margin-top: 15px;">
+                <div class="result-box">
+                    <div class="result-title">Выпало предметов:</div>
+                    <div class="result-value" id="mcSuccesses">-</div>
+                </div>
+                <div class="result-box">
+                    <div class="result-title">Экспериментальный шанс:</div>
+                    <div class="result-value roblox-accent-blue" id="mcRate">-</div>
+                </div>
+                <div class="result-box" style="grid-column: 1 / -1; border-color: var(--rbx-red);">
+                    <div class="result-title">Макс. серия «неудач» подряд:</div>
+                    <div class="result-value roblox-accent-red" id="mcMaxFails">-</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function calculateProbability() {
+        const p = parseFloat(document.getElementById('chanceInput').value) / 100;
+        const n = parseInt(document.getElementById('attemptsInput').value);
+
+        if (isNaN(p) || isNaN(n) || p <= 0 || n <= 0) return;
+
+        // P = 1 - (1 - p)^n
+        const probFail = Math.pow(1 - p, n);
+        const probSuccess = 1 - probFail;
+
+        document.getElementById('probResult').innerText = (probSuccess * 100).toFixed(2) + '%';
+        document.getElementById('failResult').innerText = (probFail * 100).toFixed(2) + '%';
+
+        // Pity calculation for 95% confidence
+        const pityN = Math.ceil(Math.log(1 - 0.95) / Math.log(1 - p));
+        document.getElementById('pityResult').innerText = pityN + ' открытий';
+
+        if (n < pityN) {
+            document.getElementById('pityStatus').innerText = '⚠️ Высокий риск ухода игроков!';
+            document.getElementById('pityStatus').style.color = '#e11d48';
+        } else {
+            document.getElementById('pityStatus').innerText = '✅ Баланс защищен Pity-системой';
+            document.getElementById('pityStatus').style.color = '#10b981';
+        }
+    }
+
+    function convertPercentToDecimal() {
+        const pct = parseFloat(document.getElementById('percentVal').value);
+        if (isNaN(pct)) {
+            document.getElementById('decFractionResult').innerText = '-';
+            return;
+        }
+        const dec = pct / 100;
+        document.getElementById('decFractionResult').innerText = dec.toString();
+    }
+
+    function convertDecimalToPercent() {
+        const dec = parseFloat(document.getElementById('decimalVal').value);
+        if (isNaN(dec)) {
+            document.getElementById('percentResult').innerText = '-';
+            return;
+        }
+        const pct = dec * 100;
+        document.getElementById('percentResult').innerText = pct.toFixed(2).replace(/\.00$/, '') + '%';
+    }
+
+    function convertBases() {
+        const dec = parseInt(document.getElementById('decInput').value);
+        if (isNaN(dec) || dec < 1) {
+            document.getElementById('binResult').innerText = '-';
+            document.getElementById('unaryResult').innerText = '-';
+            return;
+        }
+
+        document.getElementById('binResult').innerText = dec.toString(2) + '₂';
+
+        const unaryVal = dec <= 200 ? '|'.repeat(dec) : '|'.repeat(200) + '... (лимит 200)';
+        document.getElementById('unaryResult').innerText = unaryVal;
+    }
+
+    function runMonteCarlo() {
+        const p = parseFloat(document.getElementById('chanceInput').value) / 100;
+        if (isNaN(p) || p <= 0) return;
+
+        const totalSims = 1000;
+        let successes = 0;
+        let currentFailStreak = 0;
+        let maxFailStreak = 0;
+
+        for (let i = 0; i < totalSims; i++) {
+            const roll = Math.random();
+            if (roll < p) {
+                successes++;
+                if (currentFailStreak > maxFailStreak) {
+                    maxFailStreak = currentFailStreak;
+                }
+                currentFailStreak = 0;
+            } else {
+                currentFailStreak++;
+            }
+        }
+
+        if (currentFailStreak > maxFailStreak) {
+            maxFailStreak = currentFailStreak;
+        }
+
+        const rate = ((successes / totalSims) * 100).toFixed(1) + '%';
+
+        document.getElementById('mcSuccesses').innerText = successes + ' из 1000';
+        document.getElementById('mcRate').innerText = rate;
+        document.getElementById('mcMaxFails').innerText = maxFailStreak + ' раз подряд';
+    }
+
+    window.onload = function() {
+        calculateProbability();
+        convertPercentToDecimal();
+        convertDecimalToPercent();
+        convertBases();
+    };
+</script>
+
+</body>
+</html>
